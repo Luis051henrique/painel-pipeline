@@ -143,4 +143,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SITE: ${{ steps.deploy.outputs.deployment-url }}
-        run: gh pr comment "${{ github.event.pull_request.number }}" --body "Preview publicado: $SITE"
+        run: gh pr comment "${{ github.event.pull_request.number }}" --body "Preview publicado em $SITE"
