@@ -1,0 +1,14 @@
+{
+  "name": "painel-pipeline",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Painel da Pipeline - projeto final de Fundamentos de DevOps (CI/CD com gates de seguranca)",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "lint": "node --check scripts/build.mjs && node --check src/app.js",
+    "test": "node --test",
+    "build": "node scripts/build.mjs",
+    "start": "npm run build && python3 -m http.server 8080 -d dist"
+  }
+}

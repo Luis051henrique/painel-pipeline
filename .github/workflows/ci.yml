@@ -1,0 +1,146 @@
+name: Pipeline DevSecOps
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pipeline-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Qualidade
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Lint
+        run: npm run lint
+      - name: Testes
+        run: npm test
+
+  secrets:
+    name: Segredos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  sast:
+    name: Código (CodeQL)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+      - uses: github/codeql-action/analyze@v3
+
+  deps:
+    name: Dependências
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependency Review (somente em PR)
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@v4
+      - name: Trivy (vulnerabilidades HIGH e CRITICAL)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+
+  deploy:
+    name: Build, SBOM e Deploy
+    needs: [quality, secrets, sast, deps]
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+      pull-requests: write
+    env:
+      GATES: ${{ toJSON(needs) }}
+      DEPLOY_ENV: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build
+        run: npm run build
+
+      - name: SBOM (CycloneDX)
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          format: cyclonedx-json
+          output-file: dist/sbom.cdx.json
+
+      - name: Atestado de proveniência do artefato
+        uses: actions/attest-build-provenance@v2
+        continue-on-error: true # exige repositório público (ou plano que suporte attestations)
+        with:
+          subject-path: 'dist/**'
+
+      - name: Nome seguro do branch
+        id: branch
+        env:
+          RAW: ${{ github.head_ref || github.ref_name }}
+        run: echo "name=$(echo "$RAW" | tr -c 'a-zA-Z0-9\n-' '-' | cut -c1-60)" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy no Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=${{ vars.CF_PROJECT_NAME }} --branch=${{ steps.branch.outputs.name }}
+
+      - name: Smoke test e security headers
+        env:
+          SITE: ${{ steps.deploy.outputs.deployment-url }}
+        run: |
+          set -euo pipefail
+          echo "Testando $SITE"
+          ok=0
+          for i in 1 2 3 4 5 6; do
+            if curl -fsS "$SITE/version.json" -o v.json; then ok=1; break; fi
+            sleep 5
+          done
+          [ "$ok" = 1 ] || { echo "Site não respondeu"; exit 1; }
+          grep -q "$GITHUB_SHA" v.json || { echo "version.json não bate com o commit"; exit 1; }
+          curl -sI "$SITE" > h.txt
+          for h in content-security-policy x-content-type-options strict-transport-security; do
+            grep -qi "^$h:" h.txt || { echo "Faltou o header $h"; exit 1; }
+          done
+          echo "### Deploy concluído" >> "$GITHUB_STEP_SUMMARY"
+          echo "URL: $SITE" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comentar URL do preview no PR
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SITE: ${{ steps.deploy.outputs.deployment-url }}
+        run: gh pr comment "${{ github.event.pull_request.number }}" --body "Preview publicado: $SITE"

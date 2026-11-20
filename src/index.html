@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Painel da Pipeline</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main>
+    <h1>Painel da Pipeline</h1>
+    <p id="msg" class="lead">Cada commit passa por quatro verificações de segurança antes de chegar ao ar.</p>
+
+    <p class="label">Versão no ar</p>
+    <p id="sha" class="sha">carregando</p>
+
+    <dl class="meta">
+      <div><dt>Build</dt><dd id="build">-</dd></div>
+      <div><dt>Branch</dt><dd id="branch">-</dd></div>
+      <div><dt>Ambiente</dt><dd id="env">-</dd></div>
+      <div><dt>Autor</dt><dd id="actor">-</dd></div>
+      <div><dt>Publicado em</dt><dd id="when">-</dd></div>
+    </dl>
+
+    <h2>Caminho até produção</h2>
+    <ol id="gates" class="line"></ol>
+
+    <footer>
+      Dados lidos de <a href="version.json">version.json</a>.
+      Lista de componentes: <a href="sbom.cdx.json">SBOM</a>.
+    </footer>
+  </main>
+</body>
+</html>
