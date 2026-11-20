@@ -34,3 +34,4 @@ Observação: as actions estão fixadas por tag. Para endurecer a cadeia de supr
 3. Faça o merge e mostre a produção atualizada (commit e build novos no painel).
 4. **Quebre de propósito:** em outro PR, troque o valor esperado em `test/build.test.mjs` (o gate Qualidade falha), ou adicione um token falso no formato `ghp_` + 36 caracteres aleatórios (o Gitleaks bloqueia). Mostre que o deploy não acontece e depois corrija.
 5. Mostre o **rollback**: Cloudflare > Deployments > deploy anterior > Rollback, ou `git revert` e novo merge.
+Pipeline validada.
