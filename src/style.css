@@ -1,26 +1,41 @@
-:root {
-  --bg: #e9eef2; --ink: #0f1e2e; --mut: #5b6b7a; --rule: #c5d0d9;
-  --ok: #0a7d78; --bad: #c2410c;
-  color-scheme: light;
-}
+:root { --ink: #0b1b2b; --bg: #eef2f5; --card: #fff; --mut: #5b6b7a; --rule: #d5dde4; --ok: #0a8f7f; --bad: #c2410c; --acc: #ff7a2f; color-scheme: light; }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
-main { max-width: 720px; margin: 0 auto; padding: 56px 22px 72px; }
-h1 { font: 600 1.1rem/1.2 system-ui, sans-serif; margin: 0 0 6px; }
-h2 { font: 600 1.1rem/1.2 system-ui, sans-serif; margin: 56px 0 22px; }
-.lead { color: var(--mut); margin: 0 0 56px; max-width: 56ch; }
-.label { margin: 0; color: var(--mut); font-size: .95rem; }
-.sha { margin: 0 0 24px; font: 600 clamp(3rem, 14vw, 6.5rem)/1 Georgia, "Iowan Old Style", serif; letter-spacing: -.02em; word-break: break-all; }
-.meta { margin: 0; border-top: 1px solid var(--rule); }
-.meta div { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
-.meta dt { color: var(--mut); }
-.meta dd { margin: 0; font-weight: 600; text-align: right; }
-.line { list-style: none; margin: 0 0 0 11px; padding: 0 0 0 30px; border-left: 3px solid var(--rule); }
-.line li { position: relative; padding-bottom: 24px; }
-.line li:last-child { padding-bottom: 0; }
-.line li::before { content: ""; position: absolute; left: -43px; top: 4px; width: 21px; height: 21px; border-radius: 50%; background: var(--bg); border: 3px solid var(--rule); }
-.line li.ok::before { background: var(--ok); border-color: var(--ok); }
-.line li.fail::before { background: var(--bad); border-color: var(--bad); }
-.line small { display: block; color: var(--mut); }
-footer { margin-top: 64px; color: var(--mut); font-size: .95rem; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.wrap { max-width: 980px; margin: 0 auto; padding: 0 24px; }
+
+.hero { background-color: var(--ink); color: #fff; padding: 72px 0 64px;
+  background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+  background-size: 40px 40px; }
+.kicker { margin: 0 0 20px; color: #9fb3c8; display: flex; align-items: center; gap: 10px; }
+.kicker i { width: 8px; height: 8px; border-radius: 50%; background: var(--acc); }
+h1 { margin: 0; max-width: 22ch; font: 700 clamp(2.2rem, 6vw, 4rem)/1.08 Georgia, "Iowan Old Style", serif; letter-spacing: -.02em; }
+.sub { margin: 20px 0 32px; max-width: 52ch; color: #b7c6d6; font-size: 1.1rem; }
+.badge { display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px; border: 1px solid rgba(255,255,255,.25); border-radius: 999px; font-size: .95rem; }
+.badge i { width: 10px; height: 10px; border-radius: 50%; background: #8394a6; }
+.badge.ok i { background: #2dd4a7; }
+.badge code { font: 600 .95rem ui-monospace, Consolas, monospace; }
+
+main { padding: 56px 24px 24px; }
+h2 { margin: 0 0 20px; color: var(--mut); font: 600 .85rem system-ui, sans-serif; letter-spacing: .1em; text-transform: uppercase; }
+section + section { margin-top: 56px; }
+
+.stages { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+.stages li { background: var(--card); border: 1px solid var(--rule); border-top: 4px solid var(--rule); border-radius: 12px; padding: 18px 16px; }
+.stages li.ok { border-top-color: var(--ok); }
+.stages li.ok:last-child { border-top-color: var(--acc); }
+.stages li.fail { border-top-color: var(--bad); }
+.stages b { display: block; }
+.stages small { display: block; margin-top: 4px; color: var(--mut); font-size: .85rem; }
+.stages em { display: inline-block; margin-top: 12px; font-size: .8rem; font-style: normal; font-weight: 600; color: var(--mut); }
+.stages .ok em { color: var(--ok); }
+.stages .fail em { color: var(--bad); }
+
+.release { margin: 0; padding: 8px 24px; background: var(--ink); color: #e6eef6; border-radius: 12px; font: .95rem ui-monospace, Consolas, monospace; }
+.release div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.1); }
+.release div:last-child { border: 0; }
+.release dt { color: #8aa0b5; }
+.release dd { margin: 0; font-weight: 600; text-align: right; word-break: break-all; }
+
+footer { padding-top: 24px; padding-bottom: 48px; color: var(--mut); font-size: .9rem; }
 a { color: var(--ok); }
+@media (max-width: 820px) { .stages { grid-template-columns: 1fr; } }
