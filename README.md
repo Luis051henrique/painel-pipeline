@@ -2,8 +2,20 @@
 
 Projeto final de Fundamentos de DevOps: aplicação web com CI/CD completo e gates de segurança (DevSecOps).
 
-```
-git push / PR -> GitHub Actions -> [Qualidade | Segredos | CodeQL | Dependências] -> Build + SBOM + atestado -> Cloudflare Pages -> smoke test
+```mermaid
+flowchart LR
+  A[git push] --> B[GitHub Actions]
+  B --> C1[Qualidade]
+  B --> C2[Segredos]
+  B --> C3[CodeQL]
+  B --> C4[Dependências]
+  C1 --> D[Build + SBOM]
+  C2 --> D
+  C3 --> D
+  C4 --> D
+  D --> E[Deploy no Cloudflare Pages]
+  E --> F[Smoke test]
+  F --> G[Site no ar]
 ```
 
 - **Pull Request** gera um *preview* em URL própria. **Merge na `main`** publica em produção.
