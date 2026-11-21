@@ -24,7 +24,7 @@ flowchart LR
 
 ## Rodar local
 ```bash
-npm run lint && npm test && npm start   # http://localhost:8080
+npm run lint && npm test && npm run build && npx serve dist   # http://localhost:3000
 ```
 
 ## Configuração (uma vez)
@@ -35,7 +35,7 @@ npm run lint && npm test && npm start   # http://localhost:8080
    - Secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
    - Variable: `CF_PROJECT_NAME` (nome do projeto Pages)
 5. Settings > Environments: crie `production` e `preview` (opcional: exigir aprovação em `production`).
-6. Settings > Branches: proteja a `main` exigindo PR e os checks **Qualidade**, **Segredos**, **Código (CodeQL)**, **Dependências**.
+6. Settings > Branches: (opcional) proteja a `main` exigindo os checks **Qualidade**, **Segredos**, **Código (CodeQL)** e **Dependências**.
 7. Em Settings > Code security, deixe o *Code scanning default setup* **desativado** (o CodeQL já roda no workflow) e ative o Dependabot.
 
 Observação: as actions estão fixadas por tag. Para endurecer a cadeia de suprimentos, fixe por SHA de commit (o Dependabot mantém as atualizações).
