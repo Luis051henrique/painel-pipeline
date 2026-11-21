@@ -28,10 +28,4 @@ npm run lint && npm test && npm start   # http://localhost:8080
 
 Observação: as actions estão fixadas por tag. Para endurecer a cadeia de suprimentos, fixe por SHA de commit (o Dependabot mantém as atualizações).
 
-## Roteiro da demo (vídeo)
-1. Crie um branch, altere o texto do `<p id="msg">` em `src/index.html` e abra um PR.
-2. Mostre os checks rodando e o comentário com a URL de **preview**.
-3. Faça o merge e mostre a produção atualizada (commit e build novos no painel).
-4. **Quebre de propósito:** em outro PR, troque o valor esperado em `test/build.test.mjs` (o gate Qualidade falha), ou adicione um token falso no formato `ghp_` + 36 caracteres aleatórios (o Gitleaks bloqueia). Mostre que o deploy não acontece e depois corrija.
-5. Mostre o **rollback**: Cloudflare > Deployments > deploy anterior > Rollback, ou `git revert` e novo merge.
-Pipeline validada.
+
